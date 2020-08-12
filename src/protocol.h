@@ -12,13 +12,14 @@
 
 typedef enum {
   NOT_IMPLEMENTED = -1,
-  GET = 1,
+  GET = 200,
 } method_t;
 
 typedef struct response_t {
   unsigned status;
   char description[50];
   char protocol_version[8];
+  char *body;
 } response_t;
 
 typedef struct request_t {
@@ -28,5 +29,7 @@ typedef struct request_t {
 } request_t;
 
 request_t *parse(FILE *input);
+
+void respond(int clientfd, response_t *response);
 
 #endif

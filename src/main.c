@@ -59,16 +59,8 @@ int main() {
 
     bzero(input, 2048);
     bzero(buffer, 1024);
-    while ((result = read(clientfd, buffer, 1024)) > 0) {
-      printf("< %s", buffer);
-      if (buffer[0] == '\r') {
-        break;
-      }
-      strcat(input, buffer);
-      bzero(buffer, 1024);
-    }
 
-    FILE *request_raw = fmemopen(input, strlen(input), "r");
+    FILE *request_raw = fdopen(clientfd, "r");
     request_t *request = parse(request_raw);
     fclose(request_raw);
 

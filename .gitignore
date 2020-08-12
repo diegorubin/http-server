@@ -11,3 +11,10 @@ server
 .deps
 config.status
 config.log
+test-driver
+*.log
+*.trs
+tests/protocol
+tests/Makefile
+src/Makefile
+Makefile

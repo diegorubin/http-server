@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "protocol.h"
 #include "worker.h"
 
 const int SERVER_PORT = 8080;
@@ -43,8 +44,6 @@ int main() {
 
   init_workers(NUMBER_OF_WORKERS);
 
-  char buffer[256];
-
   for (;;) {
     struct sockaddr_in client_address;
     unsigned int clientlen = sizeof(client_address);
@@ -54,17 +53,34 @@ int main() {
 
     printf("connection into pid %d\n", getpid());
 
-    ssize_t result = read(clientfd, buffer, 256);
+    ssize_t result;
+    char buffer[1024];
+    char input[2048];
 
-    if (result < 0) {
-      printf("ERROR reading from client\r\n");
-      continue;
+    bzero(input, 2048);
+    bzero(buffer, 1024);
+    while ((result = read(clientfd, buffer, 1024)) > 0) {
+      printf("< %s", buffer);
+      if (buffer[0] == '\r') {
+        break;
+      }
+      strcat(input, buffer);
+      bzero(buffer, 1024);
     }
 
-    printf("Received message: %s. Sending echo...\r\n", buffer);
+    FILE *request_raw = fmemopen(input, strlen(input), "r");
+    request_t *request = parse(request_raw);
+    fclose(request_raw);
 
-    write(clientfd, buffer, 256);
-    printf("Message '%s' sent to client.\r\n", buffer);
+    char response[2048];
+    bzero(response, 2048);
+    sprintf(response, "%d %s %s\n", request->method, request->path,
+            request->protocol_version);
+
+    printf("> %s", response);
+
+    free(request);
+    write(clientfd, response, strlen(response));
     close(clientfd);
   }
 

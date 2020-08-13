@@ -5,7 +5,7 @@ int read_method(FILE *input) {
   char method_str[10];
   char c;
 
-  while ((c = getc(input)) != ' ') {
+  while (!isspace(c = getc(input))) {
     method_str[lexeme_position++] = c;
   }
   method_str[lexeme_position] = '\0';
@@ -22,7 +22,7 @@ void read_path(FILE *input, char *dest) {
   char lexeme[1024];
   char c;
 
-  while ((c = getc(input)) != ' ') {
+  while (!isspace(c = getc(input))) {
     lexeme[lexeme_position++] = c;
   }
   lexeme[lexeme_position] = '\0';
@@ -33,7 +33,7 @@ void read_version(FILE *input, char *dest) {
   int lexeme_position = 0;
   char lexeme[50];
   char c;
-  while ((c = getc(input)) != '\n') {
+  while (!isspace(c = getc(input))) {
     lexeme[lexeme_position++] = c;
   }
   lexeme[lexeme_position] = '\0';

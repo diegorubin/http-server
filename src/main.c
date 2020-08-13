@@ -53,23 +53,13 @@ int main() {
 
     printf("connection into pid %d\n", getpid());
 
-    ssize_t result;
-    char buffer[1024];
-    char input[2048];
-
-    bzero(input, 2048);
-    bzero(buffer, 1024);
-
     FILE *request_raw = fdopen(clientfd, "r");
     request_t *request = parse(request_raw);
     fclose(request_raw);
 
     char response[2048];
     bzero(response, 2048);
-    sprintf(response, "%d %s %s\n", request->method, request->path,
-            request->protocol_version);
-
-    printf("> %s", response);
+    sprintf(response, "%s %d %s \r\n", request->protocol_version, request->method, "OK");
 
     free(request);
     write(clientfd, response, strlen(response));

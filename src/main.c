@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "protocol.h"
+#include "sqd3.h"
 #include "worker.h"
 
 const int SERVER_PORT = 8080;
@@ -44,6 +45,7 @@ int main() {
 
   init_workers(NUMBER_OF_WORKERS);
 
+  init_sqd3_context();
   for (;;) {
     struct sockaddr_in client_address;
     unsigned int clientlen = sizeof(client_address);
@@ -57,13 +59,10 @@ int main() {
     request_t *request = parse(request_raw);
 
     response_t *response = (response_t *)malloc(sizeof(response_t));
-
-    response->status = 200;
     strcpy(response->protocol_version, request->protocol_version);
-    read_reason(response->status, response->reason);
-    response->body = (char *)malloc(3);
-    strcpy(response->body, "oi\n");
 
+    execute_script(request, response);
+    read_reason(response->status, response->reason);
     send_response(clientfd, response);
 
     free(request);

@@ -2,10 +2,12 @@
 
 char *reasons[] = {
     "OK",
+    "NOT FOUND",
 };
 
 unsigned statuses[] = {
     200,
+    404,
 };
 
 #define separator "\n"

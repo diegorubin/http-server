@@ -1,0 +1,2 @@
+body = (7 + 5);
+print(body)

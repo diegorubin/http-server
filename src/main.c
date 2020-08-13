@@ -55,14 +55,22 @@ int main() {
 
     FILE *request_raw = fdopen(clientfd, "r");
     request_t *request = parse(request_raw);
-    fclose(request_raw);
 
-    char response[2048];
-    bzero(response, 2048);
-    sprintf(response, "%s %d %s \r\n", request->protocol_version, request->method, "OK");
+    response_t *response = (response_t *)malloc(sizeof(response_t));
+
+    response->status = 200;
+    strcpy(response->protocol_version, request->protocol_version);
+    read_reason(response->status, response->reason);
+    response->body = (char *)malloc(3);
+    strcpy(response->body, "oi\n");
+
+    send_response(clientfd, response);
 
     free(request);
-    write(clientfd, response, strlen(response));
+    free(response->body);
+    free(response);
+
+    fclose(request_raw);
     close(clientfd);
   }
 

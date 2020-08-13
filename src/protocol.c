@@ -1,5 +1,53 @@
 #include "protocol.h"
 
+char *reasons[] = {
+    "OK",
+};
+
+unsigned statuses[] = {
+    200,
+};
+
+#define separator "\n"
+
+/**
+ * Response = Status-Line
+ *            *(( general-header
+ *             | response-header
+ *             | entity-header ) CRLF)
+ *            CRLF
+ *            [ message-body ]
+ * Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+ */
+void send_response(int clientfd, response_t *response) {
+
+  char status_line[256];
+  bzero(status_line, 256);
+  sprintf(status_line, "%s %u %s\n", response->protocol_version,
+          response->status, response->reason);
+  write(clientfd, status_line, strlen(status_line));
+
+  if (response->body != NULL) {
+    char content_length[20];
+    sprintf(content_length, "Content-Length: %lu\n", strlen(response->body));
+    write(clientfd, content_length, strlen(content_length));
+  }
+
+  write(clientfd, separator, strlen(separator));
+
+  if (response->body != NULL) {
+    write(clientfd, response->body, strlen(response->body));
+  }
+}
+
+void read_reason(unsigned status, char *dest) {
+  for (unsigned i = 0; i < (sizeof(statuses) / sizeof(unsigned)); i++) {
+    if (statuses[i] == status) {
+      strcpy(dest, reasons[i]);
+    }
+  }
+}
+
 int read_method(FILE *input) {
   int lexeme_position = 0;
   char method_str[10];

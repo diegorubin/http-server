@@ -12,7 +12,7 @@
 
 const int SERVER_PORT = 8080;
 const int BACKGROUND_CONNECTIONS = 10;
-const int NUMBER_OF_WORKERS = 4;
+const int NUMBER_OF_WORKERS = 3;
 
 int main() {
 

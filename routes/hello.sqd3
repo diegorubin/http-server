@@ -1,2 +1,1 @@
-body = (7 + 5);
-print(body)
+body = (7 + 3)
